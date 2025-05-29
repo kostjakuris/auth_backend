@@ -1,6 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../users/dto/create.user.dto';
+import { CreateUserDto, LoginUserDto, RegenerateTokenDto } from '../users/dto/create.user.dto';
+import { Response } from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -8,13 +10,24 @@ export class AuthController {
   
   }
   
+  @Get('/user')
+  @UseGuards(JwtAuthGuard)
+  getUserInfo(@Req() request: Request) {
+    return this.authService.getUserInfo(request);
+  }
+  
+  @Post('/regenerate-token')
+  regenerateToken(@Res({passthrough: true}) response: Response, @Body() requestData: RegenerateTokenDto) {
+    return this.authService.regenerateToken(requestData, response);
+  }
+  
   @Post('/login')
-  login(@Body() userData: CreateUserDto) {
-    return this.authService.login(userData);
+  login(@Res({passthrough: true}) response: Response, @Body() userData: LoginUserDto) {
+    return this.authService.login(userData, response);
   }
   
   @Post('/register')
-  register(@Body() userData: CreateUserDto) {
-    return this.authService.register(userData);
+  register(@Res({passthrough: true}) response: Response, @Body() userData: CreateUserDto) {
+    return this.authService.register(userData, response);
   }
 }
