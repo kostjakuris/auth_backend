@@ -1,6 +1,12 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUserDto, RegenerateTokenDto } from '../users/dto/create.user.dto';
+import {
+  CreateUserDto,
+  ForgotPasswordDto,
+  LoginUserDto,
+  RegenerateTokenDto,
+  ResetPasswordDto
+} from '../users/dto/create.user.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
@@ -19,6 +25,16 @@ export class AuthController {
   @Post('/regenerate-token')
   regenerateToken(@Res({passthrough: true}) response: Response, @Body() requestData: RegenerateTokenDto) {
     return this.authService.regenerateToken(requestData, response);
+  }
+  
+  @Post('/forgot-password')
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+  
+  @Patch('/reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
   }
   
   @Post('/login')

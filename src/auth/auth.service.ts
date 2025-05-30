@@ -1,16 +1,25 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto, LoginUserDto, RegenerateTokenDto } from '../users/dto/create.user.dto';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CreateUserDto,
+  ForgotPasswordDto,
+  LoginUserDto,
+  RegenerateTokenDto,
+  ResetPasswordDto
+} from '../users/dto/create.user.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../users/users.entity';
 import * as process from 'node:process';
 import { Response } from 'express';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService, private jwtService: JwtService) {
-  
+  constructor(private usersService: UsersService,
+    private jwtService: JwtService,
+    private mailService: MailService) {
+    
   }
   
   async getUserInfo(request: any) {
@@ -26,6 +35,31 @@ export class AuthService {
     if (user) {
       return this.generateToken(user, response);
     }
+  }
+  
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const user = await this.usersService.findUserByEmail(forgotPasswordDto.email);
+    if (user) {
+      const payload = {id: user.id};
+      const resetPasswordToken = this.jwtService.sign(payload, {expiresIn: '10m'});
+      await this.mailService.sendResetLink(forgotPasswordDto.email, resetPasswordToken);
+      return 'Link to reset password was sent to your email';
+    }
+    throw new UnauthorizedException('User with this email was not found');
+  }
+  
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const decodedToken = this.jwtService.decode(resetPasswordDto.token);
+    if (!decodedToken) {
+      throw new UnauthorizedException('Your token is probably wrong or expired');
+    }
+    const user = await this.usersService.findUserById(decodedToken.id);
+    if (user) {
+      const hashedPassword = await bcrypt.hash(resetPasswordDto.password, 5);
+      await this.usersService.changePassword(user.id, hashedPassword);
+      return 'Your password was changed successfully';
+    }
+    throw new UnauthorizedException('Your token is probably wrong or expired');
   }
   
   async login(userData: LoginUserDto, response: Response) {

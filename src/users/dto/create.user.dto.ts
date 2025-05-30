@@ -9,6 +9,15 @@ export class LoginUserDto {
   readonly password: string;
 }
 
+export class ResetPasswordDto {
+  readonly password: string;
+  readonly token: string;
+}
+
+export class ForgotPasswordDto {
+  readonly email: string;
+}
+
 export class RegenerateTokenDto {
   readonly refreshToken: string;
 }
