@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { TodoModule } from './todo/todo.module';
+import { TaskModule } from './task/task.module';
 import * as process from 'node:process';
 
 @Module({
@@ -25,6 +27,8 @@ import * as process from 'node:process';
     }),
     UsersModule,
     AuthModule,
+    TodoModule,
+    TaskModule,
   ]
 })
 export class AppModule {

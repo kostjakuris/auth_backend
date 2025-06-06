@@ -13,12 +13,16 @@ import { User } from '../users/users.entity';
 import * as process from 'node:process';
 import { Response } from 'express';
 import { MailService } from '../mail/mail.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Todo } from '../todo/todo.entity';
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService,
     private jwtService: JwtService,
-    private mailService: MailService) {
+    private mailService: MailService,
+    @InjectRepository(Todo) private todoRepository: Repository<Todo>) {
     
   }
   
@@ -87,12 +91,13 @@ export class AuthService {
     const payload = {username: user.username, email: user.email, id: user.id};
     const accessToken = this.jwtService.sign(payload, {expiresIn: '1h'});
     const refreshToken = this.jwtService.sign(payload,
-      {secret: process.env.REFRESH_PRIVATE_KEY || 'refresh_secret'}
+      {secret: process.env.REFRESH_PRIVATE_KEY || 'refresh_secret', expiresIn: '3d'}
     );
     response.cookie('refresh_token', refreshToken, {
       secure: true,
       sameSite: 'strict',
       httpOnly: true,
+      maxAge: Number(new Date(this.jwtService.decode(refreshToken).exp * 1000)),
     });
     response.cookie('access_token', accessToken, {
       secure: true,
