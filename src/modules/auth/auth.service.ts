@@ -1,21 +1,16 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import {
-  CreateUserDto,
-  ForgotPasswordDto,
-  LoginUserDto,
-  RegenerateTokenDto,
-  ResetPasswordDto
-} from '../users/dto/create.user.dto';
+import { ForgotPasswordDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
+import { CreateUserDto } from '../users/dto/create.user.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { User } from '../entities/users.entity';
+import { User } from '../../entities/users.entity';
 import * as process from 'node:process';
 import { Response } from 'express';
 import { MailService } from '../users/mail.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Todo } from '../entities/todo.entity';
+import { Todo } from '../../entities/todo.entity';
 
 @Injectable()
 export class AuthService {

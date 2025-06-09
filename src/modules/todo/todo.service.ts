@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Todo } from '../entities/todo.entity';
-import { Task } from '../entities/task.entity';
+import { Todo } from '../../entities/todo.entity';
+import { Task } from '../../entities/task.entity';
 import { UsersService } from '../users/users.service';
 
 @Injectable()

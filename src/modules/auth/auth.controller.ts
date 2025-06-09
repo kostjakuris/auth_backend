@@ -1,12 +1,7 @@
 import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {
-  CreateUserDto,
-  ForgotPasswordDto,
-  LoginUserDto,
-  RegenerateTokenDto,
-  ResetPasswordDto
-} from '../users/dto/create.user.dto';
+import { ForgotPasswordDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
+import { CreateUserDto } from '../users/dto/create.user.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 

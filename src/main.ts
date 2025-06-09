@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './module/app.module';
+import { AppModule } from './modules/app.module';
 import * as cookieParser from 'cookie-parser';
 
 async function start() {

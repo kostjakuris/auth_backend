@@ -6,7 +6,7 @@ import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import * as process from 'node:process';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Todo } from '../entities/todo.entity';
+import { Todo } from '../../entities/todo.entity';
 
 @Module({
   providers: [AuthService, MailService],

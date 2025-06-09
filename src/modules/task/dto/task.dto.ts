@@ -1,4 +1,4 @@
-import { Status } from '../../entities/task.entity';
+import { Status } from '../../../entities/task.entity';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class GetTasksDto {

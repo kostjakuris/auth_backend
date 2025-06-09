@@ -3,8 +3,8 @@ import { TaskController } from './task.controller';
 import { TaskService } from './task.service';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Task } from '../entities/task.entity';
-import { Todo } from '../entities/todo.entity';
+import { Task } from '../../entities/task.entity';
+import { Todo } from '../../entities/todo.entity';
 import * as process from 'node:process';
 
 
