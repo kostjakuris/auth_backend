@@ -28,6 +28,12 @@ export class AuthService {
     }
   }
   
+  async logout(response: Response) {
+    response.clearCookie('access_token');
+    response.clearCookie('refresh_token');
+    return response.send({message: 'Log out succesfull'});
+  }
+  
   async regenerateToken(requestData: RegenerateTokenDto, response: Response) {
     const decodedToken = this.jwtService.decode(requestData.refreshToken);
     const user = await this.usersService.findUserByEmail(decodedToken.email);

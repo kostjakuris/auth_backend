@@ -17,6 +17,12 @@ export class AuthController {
     return this.authService.getUserInfo(request);
   }
   
+  @Get('/logout')
+  @UseGuards(JwtAuthGuard)
+  logout(@Res() response: Response) {
+    return this.authService.logout(response);
+  }
+  
   @Post('/regenerate-token')
   @UsePipes(ValidationPipe)
   regenerateToken(@Res({passthrough: true}) response: Response, @Body() requestData: RegenerateTokenDto) {
