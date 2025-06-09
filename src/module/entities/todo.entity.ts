@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Task } from '../task/task.entity';
-import { User } from '../users/users.entity';
+import { Task } from './task.entity';
+import { User } from './users.entity';
 
 @Entity()
 export class Todo {
@@ -10,7 +10,7 @@ export class Todo {
   @Column()
   name: string;
   
-  @OneToMany(() => Task, task => task.todo)
+  @OneToMany(() => Task, task => task.todo, {onDelete: 'CASCADE'})
   tasks: Task[];
   
   @ManyToOne(() => User, user => user.todos)

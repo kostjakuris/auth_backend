@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TodoService } from './todo.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { CreateTodoDto, DeleteTodoDto, EditTodoDto } from './dto/todo.dto';
 import { Request } from 'express';
 

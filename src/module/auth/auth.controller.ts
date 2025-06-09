@@ -8,7 +8,7 @@ import {
   ResetPasswordDto
 } from '../users/dto/create.user.dto';
 import { Response } from 'express';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {

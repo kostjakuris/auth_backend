@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Todo } from '../todo/todo.entity';
+import { Todo } from './todo.entity';
 
 export enum Status {
   toDo = 'to do',
@@ -18,7 +18,7 @@ export class Task {
   @Column({default: ''})
   description: string;
   
-  @ManyToOne(() => Todo, todo => todo.tasks)
+  @ManyToOne(() => Todo, todo => todo.tasks, {onDelete: 'CASCADE'})
   todo: Todo;
   
   @Column({type: 'enum', enum: Status, default: Status.toDo})

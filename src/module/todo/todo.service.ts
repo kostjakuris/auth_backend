@@ -1,8 +1,8 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Todo } from './todo.entity';
-import { Task } from '../task/task.entity';
+import { Todo } from '../entities/todo.entity';
+import { Task } from '../entities/task.entity';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class TodoService {
       if (todos) {
         return todos;
       }
-      throw new BadRequestException('No todos found');
+      throw new NotFoundException('No todos found');
     }
   }
   
@@ -39,10 +39,6 @@ export class TodoService {
   }
   
   async deleteTodo(id: number) {
-    const todo = await this.todoRepository.findOne({where: {id}});
-    if (todo) {
-      await this.taskRepository.delete({todo: todo});
-      await this.todoRepository.delete(id);
-    }
+    await this.todoRepository.delete(id);
   }
 }

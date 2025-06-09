@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Status, Task } from './task.entity';
-import { Todo } from '../todo/todo.entity';
+import { Status, Task } from '../entities/task.entity';
+import { Todo } from '../entities/todo.entity';
 
 @Injectable()
 export class TaskService {
@@ -10,8 +10,9 @@ export class TaskService {
     @InjectRepository(Todo) private todoRepository: Repository<Todo>) {
   }
   
-  async getAllTasks(name: string) {
-    const todo = await this.todoRepository.findOne({where: {name}});
+  async getAllTasks(id: string) {
+    const correctId = Number(id);
+    const todo = await this.todoRepository.findOne({where: {id: correctId}});
     if (todo) {
       const tasks = await this.taskRepository.find({where: {todo}});
       return await this.createRecursiveTasks(tasks);
@@ -19,8 +20,8 @@ export class TaskService {
     throw new NotFoundException('Todo Not Found');
   }
   
-  async createTask(todoName: string, name: string, description: string, parentId?: number) {
-    const todo = await this.todoRepository.findOne({where: {name: todoName}});
+  async createTask(id: number, name: string, description: string, parentId?: number) {
+    const todo = await this.todoRepository.findOne({where: {id}});
     if (todo) {
       return await this.taskRepository.save({name, description, todo, parentId});
     }
@@ -32,9 +33,11 @@ export class TaskService {
   }
   
   async deleteTask(id: number) {
-    const subtask = await this.taskRepository.findOne({where: {parentId: id}});
-    if (subtask) {
-      await this.taskRepository.delete(subtask.id);
+    const subtasks = await this.taskRepository.find({where: {parentId: id}});
+    if (subtasks) {
+      for (const task of subtasks) {
+        await this.taskRepository.delete(task.id);
+      }
     }
     return await this.taskRepository.delete(id);
   }

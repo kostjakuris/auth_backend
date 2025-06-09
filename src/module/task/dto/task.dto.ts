@@ -1,10 +1,10 @@
-import { Status } from '../task.entity';
+import { Status } from '../../entities/task.entity';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class GetTasksDto {
-  @IsString({message: 'Todo name must be a string'})
-  @IsNotEmpty({message: 'Todo name is required'})
-  readonly name: string;
+  @IsString({message: 'Todo id must be a string'})
+  @IsNotEmpty({message: 'Todo id is required'})
+  readonly id: string;
 }
 
 export class CreateTaskDto {
@@ -12,9 +12,9 @@ export class CreateTaskDto {
   @IsNotEmpty({message: 'Task name is required'})
   readonly name: string;
   
-  @IsString({message: 'Todo name must be a string'})
-  @IsNotEmpty({message: 'Todo name is required'})
-  readonly todoName: string;
+  @IsNumber({}, {message: 'Todo id must be a string'})
+  @IsNotEmpty({message: 'Todo id is required'})
+  readonly id: number;
   
   @IsString({message: 'Description must be a string'})
   @IsNotEmpty({message: 'Description is required'})

@@ -9,13 +9,13 @@ import {
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { User } from '../users/users.entity';
+import { User } from '../entities/users.entity';
 import * as process from 'node:process';
 import { Response } from 'express';
-import { MailService } from '../mail/mail.service';
+import { MailService } from '../users/mail.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Todo } from '../todo/todo.entity';
+import { Todo } from '../entities/todo.entity';
 
 @Injectable()
 export class AuthService {
