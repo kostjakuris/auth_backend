@@ -12,7 +12,7 @@ export class CreateTaskDto {
   @IsNotEmpty({message: 'Task name is required'})
   readonly name: string;
   
-  @IsNumber({}, {message: 'Todo id must be a string'})
+  @IsNumber({}, {message: 'Todo id must be a number'})
   @IsNotEmpty({message: 'Todo id is required'})
   readonly id: number;
   
