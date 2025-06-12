@@ -24,6 +24,9 @@ export class Task {
   @Column({type: 'enum', enum: Status, default: Status.toDo})
   status: Status;
   
+  @Column({type: 'integer'})
+  position: number;
+  
   @Column({nullable: true})
   parentId: number;
 }

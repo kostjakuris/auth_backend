@@ -1,5 +1,5 @@
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Status } from '../../../entities/task.entity';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class GetTasksDto {
   @IsString({message: 'Todo id must be a string'})
@@ -19,7 +19,12 @@ export class CreateTaskDto {
   @IsString({message: 'Description must be a string'})
   @IsNotEmpty({message: 'Description is required'})
   readonly description: string;
+  
   readonly parentId?: number;
+  
+  @IsNumber({}, {message: 'Position be a number'})
+  @IsNotEmpty({message: 'Position is required'})
+  readonly position: number;
 }
 
 export class EditTaskDto {
@@ -31,7 +36,17 @@ export class EditTaskDto {
   
   @IsString({message: 'Description must be a string'})
   readonly description: string;
+  
+  @IsNumber({}, {message: 'Position be a number'})
+  @IsNotEmpty({message: 'Position is required'})
+  readonly position: number;
   readonly status: Status;
+}
+
+export class EditTaskPositionDto {
+  @IsArray({message: 'List must be array'})
+  @IsNotEmpty({message: 'List is required'})
+  list: any[];
 }
 
 export class DeleteTaskDto {

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { CreateTaskDto, DeleteTaskDto, EditTaskDto, GetTasksDto } from './dto/task.dto';
+import { CreateTaskDto, DeleteTaskDto, EditTaskDto, EditTaskPositionDto, GetTasksDto } from './dto/task.dto';
 
 @Controller('task')
 export class TaskController {
@@ -20,7 +20,7 @@ export class TaskController {
   @UsePipes(ValidationPipe)
   createTask(@Body() taskDto: CreateTaskDto) {
     return this.taskService.createTask(taskDto.id, taskDto.name, taskDto.description,
-      taskDto.parentId
+      taskDto.position, taskDto.parentId
     );
   }
   
@@ -28,7 +28,14 @@ export class TaskController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   editTask(@Body() taskDto: EditTaskDto) {
-    return this.taskService.editTask(taskDto.id, taskDto.name, taskDto.description, taskDto.status);
+    return this.taskService.editTask(taskDto.id, taskDto.name, taskDto.description,taskDto.position, taskDto.status);
+  }
+  
+  @Patch('/edit-position')
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(ValidationPipe)
+  editTaskPosition(@Body() taskDto: EditTaskPositionDto) {
+    return this.taskService.editTaskPosition(taskDto.list);
   }
   
   @Delete('/delete')

@@ -20,16 +20,30 @@ export class TaskService {
     throw new NotFoundException('Todo Not Found');
   }
   
-  async createTask(id: number, name: string, description: string, parentId?: number) {
+  async createTask(id: number, name: string, description: string, position: number, parentId?: number) {
     const todo = await this.todoRepository.findOne({where: {id}});
     if (todo) {
-      return await this.taskRepository.save({name, description, todo, parentId});
+      return await this.taskRepository.save({name, description, todo, parentId, position});
     }
     throw new NotFoundException('This todo wasn`t found');
   }
   
-  async editTask(id: number, name: string, description: string, status?: Status) {
-    return await this.taskRepository.update({id}, {name, description, status});
+  async editTask(id: number, name: string, description: string, position: number, status?: Status) {
+    return await this.taskRepository.update({id}, {name, description, position, status});
+  }
+  
+  async editTaskPosition(list: Task[]) {
+    const changedList: Task[] = await this.changeTasksPosition(list);
+    changedList.map(async(item: Task) => {
+      return await this.taskRepository.update({id: item.id},
+        {
+          name: item.name,
+          description: item.description,
+          position: item.position,
+          status: item.status
+        }
+      );
+    });
   }
   
   async deleteTask(id: number) {
@@ -54,12 +68,25 @@ export class TaskService {
         const parent = correctTasks[task.parentId];
         if (parent) {
           parent.subTasks.push(correctTasks[task.id]);
+          parent.subTasks.sort((a: {position: number;}, b: {position: number;}) =>
+            a.position - b.position);
         }
       }
     });
     
-    return tasks.filter((task) => task.parentId === null).
-      map((task) => correctTasks[task.id]);
+    return tasks.filter((task) => task.parentId === null).sort(
+      (a, b) => a.position - b.position).map(
+      (task) => correctTasks[task.id]);
+  }
+  
+  private async changeTasksPosition(tasks: Task[]) {
+    const correctTasks = {};
+    
+    tasks.forEach((task) => {
+      correctTasks[task.id] = {...task, subTasks: [], position: tasks.indexOf(task) + 1};
+    });
+    
+    return tasks.map((task) => correctTasks[task.id]);
   }
 }
 
