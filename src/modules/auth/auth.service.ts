@@ -8,16 +8,12 @@ import { User } from '../../entities/users.entity';
 import * as process from 'node:process';
 import { Response } from 'express';
 import { MailService } from '../users/mail.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Todo } from '../../entities/todo.entity';
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService,
     private jwtService: JwtService,
-    private mailService: MailService,
-    @InjectRepository(Todo) private todoRepository: Repository<Todo>) {
+    private mailService: MailService) {
     
   }
   

@@ -7,6 +7,9 @@ import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
 import { TaskModule } from './task/task.module';
 import * as process from 'node:process';
+import { GatewayModule } from './gateway/gateway.module';
+import { RoomModule } from './room/room.module';
+import { MessageModule } from './messages/message.module';
 
 @Module({
   controllers: [AuthController],
@@ -29,6 +32,9 @@ import * as process from 'node:process';
     AuthModule,
     TodoModule,
     TaskModule,
+    GatewayModule,
+    RoomModule,
+    MessageModule
   ]
 })
 export class AppModule {
