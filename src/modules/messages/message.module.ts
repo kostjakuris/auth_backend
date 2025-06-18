@@ -6,6 +6,8 @@ import { RoomModule } from '../room/room.module';
 import { MessageController } from './message.controller';
 import { JwtModule } from '@nestjs/jwt';
 import * as process from 'node:process';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Room } from '../../entities/room.entity';
 
 
 @Module({
@@ -17,6 +19,7 @@ import * as process from 'node:process';
     }),
     MongooseModule.forRoot('mongodb://kostja:root@localhost:27017/chat?authSource=admin'),
     MongooseModule.forFeature([{name: Message.name, schema: MessageSchema}]),
+    TypeOrmModule.forFeature([Room]),
     RoomModule
   ],
   exports: [MessageService]

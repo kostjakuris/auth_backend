@@ -19,7 +19,7 @@ export class CreateMessageDto {
 }
 
 export class GetMessagesDto {
-  @IsString({message: 'Todo id must be a string'})
-  @IsNotEmpty({message: 'Todo id is required'})
+  @IsString({message: 'Room id must be a string'})
+  @IsNotEmpty({message: 'Room id is required'})
   readonly id: string;
 }

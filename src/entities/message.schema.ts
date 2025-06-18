@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type MessageDocument = HydratedDocument<Message>;
 
-@Schema()
+@Schema({timestamps: true})
 export class Message {
   @Prop()
   message: string;
@@ -13,6 +13,7 @@ export class Message {
   
   @Prop()
   roomId: number;
+  
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

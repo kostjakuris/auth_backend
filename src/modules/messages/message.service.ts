@@ -3,11 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from '../../entities/message.schema';
 import { Model } from 'mongoose';
 import { RoomService } from '../room/room.service';
+import { Room } from '../../entities/room.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MessageService {
   constructor(private roomService: RoomService,
-    @InjectModel(Message.name) private messageModel: Model<MessageDocument>) {
+    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectRepository(Room) private roomRepository: Repository<Room>) {
   }
   
   async getAllMessages(id: string) {

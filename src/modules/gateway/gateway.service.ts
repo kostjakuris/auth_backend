@@ -17,10 +17,12 @@ export class GatewayService implements OnModuleInit {
   server: Server;
   
   onModuleInit(): any {
-    this.server.on('connection', (socket: Socket) => {
+    this.server.on('connect', (socket: Socket) => {
       socket.on('joinRoom', (roomName: string) => {
         socket.join(roomName);
       });
+      // socket.on('message', async(body: CreateMessageDto) => {
+      // });
     });
   }
   

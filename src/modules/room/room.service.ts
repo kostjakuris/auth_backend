@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Room } from '../../entities/room.entity';
-import { CreateRoomDto, JoinRoomDto } from './dto/room.dto';
+import { CreateRoomDto } from './dto/room.dto';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -18,6 +18,12 @@ export class RoomService {
     throw new NotFoundException('No rooms found');
   }
   
+  async checkUserExistence(request: any, id: number) {
+    const userInTheRoom = await this.roomRepository.createQueryBuilder('room').innerJoin('room.users', 'user').where(
+      'room.id = :roomId', {roomId: id}).andWhere('user.id = :userId', {userId: request.user.id}).getOne();
+    return !!userInTheRoom;
+  }
+  
   async findCurrentRoom(id: number) {
     return await this.roomRepository.findOne({where: {id}});
   }
@@ -30,15 +36,19 @@ export class RoomService {
     throw new NotFoundException('This user was not found');
   }
   
-  async joinRoom(request: any, joinRoomDto: JoinRoomDto) {
+  async joinRoom(request: any, id: number) {
     const user = await this.usersService.findUserById(request.user.id);
     if (!user) {
       throw new NotFoundException('This user was not found');
     }
-    const room = await this.roomRepository.findOneBy({name: joinRoomDto.name});
-    if (!room) throw new NotFoundException(`Room not found`);
     
-    await this.roomRepository.createQueryBuilder().relation(Room, 'users').of(room.id).add(user.id);
+    const userInTheRoom = await this.roomRepository.createQueryBuilder('room').innerJoin('room.users', 'user').where(
+      'room.id = :roomId', {roomId: id}).andWhere('user.id = :userId', {userId: request.user.id}).getOne();
     
+    if (!userInTheRoom) {
+      await this.roomRepository.createQueryBuilder().relation(Room, 'users').of(id).add(user.id);
+      return 'Welcome in the room!';
+    }
+    return true;
   }
 }

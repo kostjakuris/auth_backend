@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateRoomDto {
   @IsString({message: 'Room name must be a string'})
@@ -7,8 +7,13 @@ export class CreateRoomDto {
 }
 
 export class JoinRoomDto {
-  @IsString({message: 'Room name must be a string'})
-  @IsNotEmpty({message: 'Room name is required'})
-  readonly name: string;
+  @IsNumber({}, {message: 'Room id must be a number'})
+  @IsNotEmpty({message: 'Room id is required'})
+  readonly id: number;
 }
 
+export class CheckDto {
+  @IsString({message: 'Room id must be a string'})
+  @IsNotEmpty({message: 'Room id is required'})
+  readonly id: string;
+}
