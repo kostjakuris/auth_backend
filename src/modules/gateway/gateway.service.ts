@@ -21,18 +21,20 @@ export class GatewayService implements OnModuleInit {
       socket.on('joinRoom', (roomName: string) => {
         socket.join(roomName);
       });
-      // socket.on('message', async(body: CreateMessageDto) => {
-      // });
     });
   }
   
   @SubscribeMessage('message')
   async handleMessage(@MessageBody() body: CreateMessageDto) {
-    await this.messageService.saveMessage(body.roomId, body.content, body.username);
-    this.server.to(body.roomName).emit('getMessage', {
-      keyName: Math.random(),
-      username: body.username,
-      message: body.content
-    });
+    const message = await this.messageService.saveMessage(body.roomId, body.userId, body.content, body.username);
+    if (message) {
+      this.server.to(body.roomName).emit('getMessage', {
+        userId: body.userId,
+        _id: message._id,
+        username: body.username,
+        message: body.content,
+        updatedAt: body.updatedAt,
+      });
+    }
   }
 }

@@ -20,7 +20,7 @@ export class AuthService {
   async getUserInfo(request: any) {
     const user = await this.usersService.findUserByEmail(request.user.email);
     if (user) {
-      return {username: user.username, email: user.email};
+      return {userId: user.id, username: user.username, email: user.email};
     }
   }
   

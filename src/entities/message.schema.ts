@@ -12,6 +12,9 @@ export class Message {
   username: string;
   
   @Prop()
+  userId: string;
+  
+  @Prop()
   roomId: number;
   
 }
