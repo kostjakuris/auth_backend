@@ -5,6 +5,9 @@ export class CreateMessageDto {
   @IsNotEmpty({message: 'Room id is required'})
   readonly roomId: number;
   
+  @IsString({message: 'Message id must be a string'})
+  readonly messageId: string;
+  
   @IsNumber({}, {message: 'User id must be a number'})
   @IsNotEmpty({message: 'User id is required'})
   readonly userId: number;

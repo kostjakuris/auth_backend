@@ -24,16 +24,54 @@ export class GatewayService implements OnModuleInit {
     });
   }
   
-  @SubscribeMessage('message')
-  async handleMessage(@MessageBody() body: CreateMessageDto) {
-    const message = await this.messageService.saveMessage(body.roomId, body.userId, body.content, body.username);
+  @SubscribeMessage('sendMessage')
+  async sendMessage(@MessageBody() body: CreateMessageDto) {
+    const message: any = await this.messageService.saveMessage(body.roomId, body.userId, body.content, body.username);
     if (message) {
       this.server.to(body.roomName).emit('getMessage', {
         userId: body.userId,
         _id: message._id,
         username: body.username,
         message: body.content,
-        updatedAt: body.updatedAt,
+        createdAt: new Date(message.createdAt).toLocaleString('en-US', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: false,
+        }).replace('at', ''),
+      });
+    }
+  }
+  
+  @SubscribeMessage('editMessage')
+  async editMessage(@MessageBody() body: CreateMessageDto) {
+    const message: any = await this.messageService.updateMessage(body.messageId, body.content);
+    if (message) {
+      this.server.to(body.roomName).emit('getUpdatedMessage', {
+        userId: body.userId,
+        _id: message._id,
+        username: body.username,
+        message: body.content,
+        updatedAt: new Date(message.updatedAt).toLocaleString('en-US', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: false,
+        }).replace('at', ''),
+      });
+    }
+  }
+  
+  @SubscribeMessage('deleteMessage')
+  async deleteMessage(@MessageBody() body: CreateMessageDto) {
+    const message: any = await this.messageService.deleteMessage(body.messageId);
+    if (message) {
+      this.server.to(body.roomName).emit('getDeletedId', {
+        id: message._id,
       });
     }
   }

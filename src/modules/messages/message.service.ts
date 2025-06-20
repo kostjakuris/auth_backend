@@ -19,11 +19,11 @@ export class MessageService {
   }
   
   async updateMessage(id: string, message: string) {
-    return this.messageModel.findByIdAndUpdate({_id: id}, {message});
+    return this.messageModel.findByIdAndUpdate({_id: id}, {message}, {new: true});
   }
   
   async deleteMessage(id: string) {
-    return this.messageModel.findByIdAndDelete({_id: id});
+    return this.messageModel.findByIdAndDelete({_id: id}, {new: true});
   }
   
   async saveMessage(id: number, userId: number, content: string, username: string) {
