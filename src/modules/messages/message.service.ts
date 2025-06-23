@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from '../../entities/message.schema';
 import { Model } from 'mongoose';
@@ -18,16 +18,22 @@ export class MessageService {
     return [];
   }
   
-  async updateMessage(id: string, message: string) {
-    return this.messageModel.findByIdAndUpdate({_id: id}, {message}, {new: true});
+  async updateMessage(id: string, messageUserId: string, message: string, userId: number, ownerId: number) {
+    if (userId === Number(messageUserId) || userId === ownerId) {
+      return this.messageModel.findByIdAndUpdate({_id: id}, {message, isUpdated: true}, {new: true});
+    }
+    throw new ForbiddenException(`You don't have any permissions to update this message`);
   }
   
-  async deleteMessage(id: string) {
-    return this.messageModel.findByIdAndDelete({_id: id}, {new: true});
+  async deleteMessage(id: string, messageUserId: string, ownerId: number, userId: number) {
+    if (userId === Number(messageUserId) || userId === ownerId) {
+      return this.messageModel.findByIdAndDelete({_id: id}, {new: true});
+    }
+    throw new ForbiddenException(`You don't have any permissions to delete this message`);
   }
   
   async saveMessage(id: number, userId: number, content: string, username: string) {
-    const room = await this.roomService.findCurrentRoom(id);
+    const room = await this.roomService.findCurrentRoom(String(id));
     if (room) {
       const newMessage = new this.messageModel({roomId: id, message: content, username, userId});
       return await newMessage.save();

@@ -1,6 +1,18 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UsePipes,
+  ValidationPipe
+} from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CheckDto, CreateRoomDto, JoinRoomDto } from './dto/room.dto';
+import { CheckDto, CreateRoomDto, DeleteRoomDto, EditRoomDto, JoinRoomDto } from './dto/room.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('room')
@@ -20,6 +32,12 @@ export class RoomController {
     return this.roomService.checkUserExistence(request, Number(checkDto.id));
   }
   
+  @Get('/current-room')
+  @UseGuards(JwtAuthGuard)
+  getCurrentRoom(@Query() checkDto: CheckDto) {
+    return this.roomService.findCurrentRoom(checkDto.id);
+  }
+  
   @Post('/create')
   @UsePipes(ValidationPipe)
   @UseGuards(JwtAuthGuard)
@@ -32,5 +50,19 @@ export class RoomController {
   @UseGuards(JwtAuthGuard)
   joinRoom(@Req() request: Request, @Body() joinRoomDto: JoinRoomDto) {
     return this.roomService.joinRoom(request, joinRoomDto.id);
+  }
+  
+  @Patch('/edit')
+  @UsePipes(ValidationPipe)
+  @UseGuards(JwtAuthGuard)
+  editRoom(@Req() request: Request, @Body() editRoomDto: EditRoomDto) {
+    return this.roomService.editRoom(request, editRoomDto.id, editRoomDto.name, editRoomDto.ownerId);
+  }
+  
+  @Delete('/delete')
+  @UsePipes(ValidationPipe)
+  @UseGuards(JwtAuthGuard)
+  deleteRoom(@Req() request: Request, @Body() deleteRoomDto: DeleteRoomDto) {
+    return this.roomService.deleteRoom(request, deleteRoomDto.id, deleteRoomDto.ownerId);
   }
 }

@@ -5,9 +5,6 @@ export class CreateMessageDto {
   @IsNotEmpty({message: 'Room id is required'})
   readonly roomId: number;
   
-  @IsString({message: 'Message id must be a string'})
-  readonly messageId: string;
-  
   @IsNumber({}, {message: 'User id must be a number'})
   @IsNotEmpty({message: 'User id is required'})
   readonly userId: number;
@@ -23,10 +20,37 @@ export class CreateMessageDto {
   @IsString({message: 'Room name must be a string'})
   @IsNotEmpty({message: 'Room name is required'})
   readonly roomName: string;
+}
+
+export class EditMessageDto {
+  @IsString({message: 'Message id must be a string'})
+  @IsNotEmpty({message: 'Message id is required'})
+  readonly messageId: string;
   
-  @IsString({message: 'Updated at must be a string'})
-  @IsNotEmpty({message: 'Updated at is required'})
-  readonly updatedAt: string;
+  @IsString({message: 'Message user id must be a string'})
+  @IsNotEmpty({message: 'Message user id is required'})
+  readonly messageUserId: string;
+  
+  @IsNumber({}, {message: 'User id must be a number'})
+  @IsNotEmpty({message: 'User id is required'})
+  readonly userId: number;
+  
+  @IsNumber({}, {message: 'Owner id must be a number'})
+  @IsNotEmpty({message: 'Owner id is required'})
+  readonly ownerId: number;
+  
+  @IsString({message: 'Content must be a string'})
+  @IsNotEmpty({message: 'Content is required'})
+  readonly content: string;
+  
+  @IsString({message: 'User name must be a string'})
+  @IsNotEmpty({message: 'User name is required'})
+  readonly username: string;
+  
+  @IsString({message: 'Room name must be a string'})
+  @IsNotEmpty({message: 'Room name is required'})
+  readonly roomName: string;
+  
 }
 
 export class GetMessagesDto {
@@ -48,5 +72,21 @@ export class UpdateMessageDto {
 export class DeleteMessageDto {
   @IsString({message: 'Message id must be a string'})
   @IsNotEmpty({message: 'Message id is required'})
-  readonly id: string;
+  readonly messageId: string;
+  
+  @IsString({message: 'Room name must be a string'})
+  @IsNotEmpty({message: 'Room name is required'})
+  readonly roomName: string;
+  
+  @IsNumber({}, {message: 'Owner id must be a number'})
+  @IsNotEmpty({message: 'Owner id is required'})
+  readonly ownerId: number;
+  
+  @IsNumber({}, {message: 'User id must be a number'})
+  @IsNotEmpty({message: 'User id is required'})
+  readonly userId: number;
+  
+  @IsString({message: 'Message user id must be a string'})
+  @IsNotEmpty({message: 'Message user id is required'})
+  readonly messageUserId: string;
 }

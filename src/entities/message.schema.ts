@@ -14,6 +14,9 @@ export class Message {
   @Prop()
   userId: string;
   
+  @Prop({default: false})
+  isUpdated: boolean;
+  
   @Prop()
   roomId: number;
   

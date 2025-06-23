@@ -2,7 +2,7 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from
 import { Server, Socket } from 'socket.io';
 import { OnModuleInit } from '@nestjs/common';
 import { MessageService } from '../messages/message.service';
-import { CreateMessageDto } from '../messages/dto/message.dto';
+import { CreateMessageDto, DeleteMessageDto, EditMessageDto } from '../messages/dto/message.dto';
 
 @WebSocketGateway({
   cors: {
@@ -46,14 +46,17 @@ export class GatewayService implements OnModuleInit {
   }
   
   @SubscribeMessage('editMessage')
-  async editMessage(@MessageBody() body: CreateMessageDto) {
-    const message: any = await this.messageService.updateMessage(body.messageId, body.content);
+  async editMessage(@MessageBody() body: EditMessageDto) {
+    const message: any = await this.messageService.updateMessage(body.messageId, body.messageUserId, body.content,
+      body.userId, body.ownerId
+    );
     if (message) {
       this.server.to(body.roomName).emit('getUpdatedMessage', {
         userId: body.userId,
         _id: message._id,
         username: body.username,
         message: body.content,
+        isUpdated: message.isUpdated,
         updatedAt: new Date(message.updatedAt).toLocaleString('en-US', {
           day: 'numeric',
           month: 'long',
@@ -67,8 +70,10 @@ export class GatewayService implements OnModuleInit {
   }
   
   @SubscribeMessage('deleteMessage')
-  async deleteMessage(@MessageBody() body: CreateMessageDto) {
-    const message: any = await this.messageService.deleteMessage(body.messageId);
+  async deleteMessage(@MessageBody() body: DeleteMessageDto) {
+    const message: any = await this.messageService.deleteMessage(body.messageId, body.messageUserId, body.ownerId,
+      body.userId
+    );
     if (message) {
       this.server.to(body.roomName).emit('getDeletedId', {
         id: message._id,

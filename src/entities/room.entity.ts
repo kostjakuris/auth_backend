@@ -9,6 +9,9 @@ export class Room {
   @Column()
   name: string;
   
-  @ManyToMany(() => User, (user) => user.rooms, {cascade: true})
+  @Column()
+  ownerId: number;
+  
+  @ManyToMany(() => User, (user) => user.rooms, {eager: true, onDelete: 'CASCADE'})
   users: User[];
 }
