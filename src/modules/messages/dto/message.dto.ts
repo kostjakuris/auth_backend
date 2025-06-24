@@ -59,15 +59,6 @@ export class GetMessagesDto {
   readonly id: string;
 }
 
-export class UpdateMessageDto {
-  @IsString({message: 'Message id must be a string'})
-  @IsNotEmpty({message: 'Message id is required'})
-  readonly id: string;
-  
-  @IsString({message: 'Message must be a string'})
-  @IsNotEmpty({message: 'Message is required'})
-  readonly message: string;
-}
 
 export class DeleteMessageDto {
   @IsString({message: 'Message id must be a string'})
@@ -89,4 +80,18 @@ export class DeleteMessageDto {
   @IsString({message: 'Message user id must be a string'})
   @IsNotEmpty({message: 'Message user id is required'})
   readonly messageUserId: string;
+}
+
+export class KickUserDto {
+  @IsString({message: 'Room name must be a string'})
+  @IsNotEmpty({message: 'Room name is required'})
+  readonly roomName: string;
+  
+  @IsNumber({}, {message: 'Room id must be a number'})
+  @IsNotEmpty({message: 'Room id is required'})
+  readonly roomId: number;
+  
+  @IsNumber({}, {message: 'User id must be a number'})
+  @IsNotEmpty({message: 'User id is required'})
+  readonly userId: number;
 }

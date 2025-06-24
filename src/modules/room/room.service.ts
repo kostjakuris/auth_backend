@@ -17,7 +17,6 @@ export class RoomService {
   async getAllRooms() {
     const rooms = await this.roomRepository.find();
     if (rooms) {
-      console.log();
       return rooms;
     }
     throw new NotFoundException('No rooms found');
@@ -63,6 +62,10 @@ export class RoomService {
       return 'Welcome in the room!';
     }
     return true;
+  }
+  
+  async removeUser(roomId: number, userId: number) {
+    return await this.roomRepository.createQueryBuilder().relation(Room, 'users').of(roomId).remove(userId);
   }
   
   async editRoom(request: any, id: number, name: string, ownerId: number) {

@@ -2,7 +2,8 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from
 import { Server, Socket } from 'socket.io';
 import { OnModuleInit } from '@nestjs/common';
 import { MessageService } from '../messages/message.service';
-import { CreateMessageDto, DeleteMessageDto, EditMessageDto } from '../messages/dto/message.dto';
+import { CreateMessageDto, DeleteMessageDto, EditMessageDto, KickUserDto } from '../messages/dto/message.dto';
+import { RoomService } from '../room/room.service';
 
 @WebSocketGateway({
   cors: {
@@ -10,7 +11,7 @@ import { CreateMessageDto, DeleteMessageDto, EditMessageDto } from '../messages/
   }
 })
 export class GatewayService implements OnModuleInit {
-  constructor(private messageService: MessageService) {
+  constructor(private messageService: MessageService, private roomService: RoomService) {
   }
   
   @WebSocketServer()
@@ -33,14 +34,7 @@ export class GatewayService implements OnModuleInit {
         _id: message._id,
         username: body.username,
         message: body.content,
-        createdAt: new Date(message.createdAt).toLocaleString('en-US', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: false,
-        }).replace('at', ''),
+        createdAt: message.createdAt
       });
     }
   }
@@ -57,14 +51,7 @@ export class GatewayService implements OnModuleInit {
         username: body.username,
         message: body.content,
         isUpdated: message.isUpdated,
-        updatedAt: new Date(message.updatedAt).toLocaleString('en-US', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: false,
-        }).replace('at', ''),
+        updatedAt: message.updatedAt
       });
     }
   }
@@ -80,4 +67,15 @@ export class GatewayService implements OnModuleInit {
       });
     }
   }
+  
+  @SubscribeMessage('kickUserFromRoom')
+  async kickUser(@MessageBody() body: KickUserDto) {
+    const user: any = await this.roomService.removeUser(body.roomId, body.userId);
+    if (user) {
+      this.server.to(body.roomName).emit('getKickedUser', {
+        userId: body.userId,
+      });
+    }
+  }
 }
+
