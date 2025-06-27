@@ -48,17 +48,17 @@ export class RoomService {
     throw new NotFoundException('This user was not found');
   }
   
-  async joinRoom(request: any, id: number) {
-    const user = await this.usersService.findUserById(request.user.id);
+  async joinRoom(id: number, roomId: number) {
+    const user = await this.usersService.findUserById(id);
     if (!user) {
       throw new NotFoundException('This user was not found');
     }
-    
+ 
     const userInTheRoom = await this.roomRepository.createQueryBuilder('room').innerJoin('room.users', 'user').where(
-      'room.id = :roomId', {roomId: id}).andWhere('user.id = :userId', {userId: request.user.id}).getOne();
+      'room.id = :roomId', {roomId: roomId}).andWhere('user.id = :userId', {userId: id}).getOne();
     
     if (!userInTheRoom) {
-      await this.roomRepository.createQueryBuilder().relation(Room, 'users').of(id).add(user.id);
+      await this.roomRepository.createQueryBuilder().relation(Room, 'users').of(roomId).add(user.id);
       return 'Welcome in the room!';
     }
     return true;

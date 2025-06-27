@@ -19,8 +19,13 @@ export class GatewayService implements OnModuleInit {
   
   onModuleInit(): any {
     this.server.on('connect', (socket: Socket) => {
-      socket.on('joinRoom', (roomName: string) => {
-        socket.join(roomName);
+      socket.on('joinRoom', async(body: KickUserDto) => {
+        socket.join(body.roomName);
+        await this.roomService.joinRoom(body.userId, body.roomId);
+        
+        this.server.to(body.roomName).emit('getJoinedUser', {
+          userId: body.userId
+        });
       });
     });
   }
@@ -70,12 +75,10 @@ export class GatewayService implements OnModuleInit {
   
   @SubscribeMessage('kickUserFromRoom')
   async kickUser(@MessageBody() body: KickUserDto) {
-    const user: any = await this.roomService.removeUser(body.roomId, body.userId);
-    if (user) {
-      this.server.to(body.roomName).emit('getKickedUser', {
-        userId: body.userId,
-      });
-    }
+    await this.roomService.removeUser(body.roomId, body.userId);
+    this.server.to(body.roomName).emit('getKickedUser', {
+      userId: body.userId,
+    });
   }
 }
 

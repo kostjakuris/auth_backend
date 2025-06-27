@@ -12,7 +12,7 @@ import {
   ValidationPipe
 } from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CheckDto, CreateRoomDto, DeleteRoomDto, EditRoomDto, JoinRoomDto } from './dto/room.dto';
+import { CheckDto, CreateRoomDto, DeleteRoomDto, EditRoomDto } from './dto/room.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('room')
@@ -43,13 +43,6 @@ export class RoomController {
   @UseGuards(JwtAuthGuard)
   createRoom(@Req() request: Request, @Body() createRoomDto: CreateRoomDto) {
     return this.roomService.createRoom(request, createRoomDto);
-  }
-  
-  @Post('/join')
-  @UsePipes(ValidationPipe)
-  @UseGuards(JwtAuthGuard)
-  joinRoom(@Req() request: Request, @Body() joinRoomDto: JoinRoomDto) {
-    return this.roomService.joinRoom(request, joinRoomDto.id);
   }
   
   @Patch('/edit')
