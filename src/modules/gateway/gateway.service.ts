@@ -32,14 +32,17 @@ export class GatewayService implements OnModuleInit {
   
   @SubscribeMessage('sendMessage')
   async sendMessage(@MessageBody() body: CreateMessageDto) {
-    const message: any = await this.messageService.saveMessage(body.roomId, body.userId, body.content, body.username);
+    const message: any = await this.messageService.saveMessage(body.roomId, body.userId, body.content, body.username,
+      body.type
+    );
     if (message) {
       this.server.to(body.roomName).emit('getMessage', {
         userId: body.userId,
         _id: message._id,
         username: body.username,
         message: body.content,
-        createdAt: message.createdAt
+        createdAt: message.createdAt,
+        type: message.type
       });
     }
   }

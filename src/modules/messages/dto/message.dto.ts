@@ -13,6 +13,10 @@ export class CreateMessageDto {
   @IsNotEmpty({message: 'Content is required'})
   readonly content: string;
   
+  @IsString({message: 'Message type must be a string'})
+  @IsNotEmpty({message: 'Message type is required'})
+  readonly type: string;
+  
   @IsString({message: 'User name must be a string'})
   @IsNotEmpty({message: 'User name is required'})
   readonly username: string;

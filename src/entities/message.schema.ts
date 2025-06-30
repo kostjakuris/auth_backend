@@ -14,6 +14,9 @@ export class Message {
   @Prop()
   userId: string;
   
+  @Prop()
+  type: string;
+  
   @Prop({default: false})
   isUpdated: boolean;
   
