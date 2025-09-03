@@ -33,7 +33,7 @@ export class GatewayService implements OnModuleInit {
   @SubscribeMessage('sendMessage')
   async sendMessage(@MessageBody() body: CreateMessageDto) {
     const message: any = await this.messageService.saveMessage(body.roomId, body.userId, body.content, body.username,
-      body.type
+      body.type, body.fullPath
     );
     if (message) {
       this.server.to(body.roomName).emit('getMessage', {
@@ -41,6 +41,7 @@ export class GatewayService implements OnModuleInit {
         _id: message._id,
         username: body.username,
         message: body.content,
+        fullPath: message.fullPath,
         createdAt: message.createdAt,
         type: message.type
       });
@@ -63,6 +64,7 @@ export class GatewayService implements OnModuleInit {
       });
     }
   }
+  
   
   @SubscribeMessage('deleteMessage')
   async deleteMessage(@MessageBody() body: DeleteMessageDto) {

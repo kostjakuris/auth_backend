@@ -17,6 +17,9 @@ export class Message {
   @Prop()
   type: string;
   
+  @Prop({nullable: true})
+  fullPath: string;
+  
   @Prop({default: false})
   isUpdated: boolean;
   

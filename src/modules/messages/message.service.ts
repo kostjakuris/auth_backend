@@ -32,10 +32,11 @@ export class MessageService {
     throw new ForbiddenException(`You don't have any permissions to delete this message`);
   }
   
-  async saveMessage(id: number, userId: number, content: string, username: string, type: string) {
+  async saveMessage(id: number, userId: number, content: string, username: string, type: string,
+    fullPath: string | null = null) {
     const room = await this.roomService.findCurrentRoom(String(id));
     if (room) {
-      const newMessage = new this.messageModel({roomId: id, message: content, username, userId, type});
+      const newMessage = new this.messageModel({roomId: id, message: content, username, userId, type, fullPath});
       return await newMessage.save();
     }
     throw new NotFoundException('This room was not found');

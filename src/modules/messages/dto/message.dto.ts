@@ -17,6 +17,9 @@ export class CreateMessageDto {
   @IsNotEmpty({message: 'Message type is required'})
   readonly type: string;
   
+  @IsString({message: 'Full path type must be a string'})
+  readonly fullPath: string;
+  
   @IsString({message: 'User name must be a string'})
   @IsNotEmpty({message: 'User name is required'})
   readonly username: string;
