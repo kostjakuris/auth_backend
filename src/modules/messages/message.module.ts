@@ -17,7 +17,7 @@ import { Room } from '../../entities/room.entity';
     JwtModule.register({
       secret: process.env.PRIVATE_KEY || 'secret',
     }),
-    MongooseModule.forRoot('mongodb://kostja:root@localhost:27017/chat?authSource=admin'),
+    MongooseModule.forRoot('mongodb://root:root@localhost:27017/chat?authSource=admin'),
     MongooseModule.forFeature([{name: Message.name, schema: MessageSchema}]),
     TypeOrmModule.forFeature([Room]),
     RoomModule

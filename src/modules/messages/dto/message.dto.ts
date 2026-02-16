@@ -32,7 +32,7 @@ export class CreateMessageDto {
 export class EditMessageDto {
   @IsString({message: 'Message id must be a string'})
   @IsNotEmpty({message: 'Message id is required'})
-  readonly messageId: string;
+  readonly currentMessageId: string;
   
   @IsString({message: 'Message user id must be a string'})
   @IsNotEmpty({message: 'Message user id is required'})

@@ -50,7 +50,7 @@ export class GatewayService implements OnModuleInit {
   
   @SubscribeMessage('editMessage')
   async editMessage(@MessageBody() body: EditMessageDto) {
-    const message: any = await this.messageService.updateMessage(body.messageId, body.messageUserId, body.content,
+    const message: any = await this.messageService.updateMessage(body.currentMessageId, body.messageUserId, body.content,
       body.userId, body.ownerId
     );
     if (message) {
