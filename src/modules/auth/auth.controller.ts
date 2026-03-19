@@ -1,6 +1,18 @@
-import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+  UsePipes,
+  ValidationPipe
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ForgotPasswordDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
+import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/create.user.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
@@ -13,8 +25,8 @@ export class AuthController {
   
   @Get('/user')
   @UseGuards(JwtAuthGuard)
-  getUserInfo(@Req() request: Request) {
-    return this.authService.getUserInfo(request);
+  getUserInfo(@Req() request: any) {
+    return this.authService.getUserInfo(request.user.email);
   }
   
   @Get('/logout')
@@ -45,6 +57,11 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   login(@Res({passthrough: true}) response: Response, @Body() userData: LoginUserDto) {
     return this.authService.login(userData, response);
+  }
+  
+  @Get('/google')
+  loginWithGoogle(@Res() response: Response, @Query() googleAuthDto: GoogleAuthDto) {
+    return this.authService.loginWithGoogle(googleAuthDto, response);
   }
   
   @Post('/register')

@@ -1,4 +1,4 @@
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { OnModuleInit } from '@nestjs/common';
 import { MessageService } from '../messages/message.service';
@@ -10,25 +10,12 @@ import { RoomService } from '../room/room.service';
     origin: true
   }
 })
-export class GatewayService implements OnModuleInit {
+export class GatewayService {
   constructor(private messageService: MessageService, private roomService: RoomService) {
   }
   
   @WebSocketServer()
   server: Server;
-  
-  onModuleInit(): any {
-    this.server.on('connect', (socket: Socket) => {
-      socket.on('joinRoom', async(body: KickUserDto) => {
-        socket.join(body.roomName);
-        await this.roomService.joinRoom(body.userId, body.roomId);
-        
-        this.server.to(body.roomName).emit('getJoinedUser', {
-          userId: body.userId
-        });
-      });
-    });
-  }
   
   @SubscribeMessage('sendMessage')
   async sendMessage(@MessageBody() body: CreateMessageDto) {
@@ -50,7 +37,8 @@ export class GatewayService implements OnModuleInit {
   
   @SubscribeMessage('editMessage')
   async editMessage(@MessageBody() body: EditMessageDto) {
-    const message: any = await this.messageService.updateMessage(body.currentMessageId, body.messageUserId, body.content,
+    const message: any = await this.messageService.updateMessage(body.currentMessageId, body.messageUserId,
+      body.content,
       body.userId, body.ownerId
     );
     if (message) {
@@ -64,7 +52,6 @@ export class GatewayService implements OnModuleInit {
       });
     }
   }
-  
   
   @SubscribeMessage('deleteMessage')
   async deleteMessage(@MessageBody() body: DeleteMessageDto) {
@@ -85,5 +72,20 @@ export class GatewayService implements OnModuleInit {
       userId: body.userId,
     });
   }
+  
+  @SubscribeMessage('joinRoom')
+  async joinRoom(
+    @MessageBody() body: KickUserDto,
+    @ConnectedSocket() socket: Socket
+  ) {
+    socket.join(body.roomName);
+    
+    await this.roomService.joinRoom(body.userId, body.roomId);
+    
+    this.server.to(body.roomName).emit('getJoinedUser', {
+      userId: body.userId,
+    });
+  }
+  
 }
 

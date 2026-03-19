@@ -1,5 +1,4 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Todo } from './todo.entity';
 import { Room } from './room.entity';
 
 @Entity()
@@ -15,9 +14,6 @@ export class User {
   
   @Column()
   password: string;
-  
-  @OneToMany(() => Todo, todo => todo.user)
-  todos: Todo[];
   
   @ManyToMany(() => Room, (room) => room.users)
   @JoinTable()

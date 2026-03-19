@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ForgotPasswordDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
+import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/create.user.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -17,8 +17,8 @@ export class AuthService {
     
   }
   
-  async getUserInfo(request: any) {
-    const user = await this.usersService.findUserByEmail(request.user.email);
+  async getUserInfo(email: string) {
+    const user = await this.usersService.findUserByEmail(email);
     if (user) {
       return {userId: user.id, username: user.username, email: user.email};
     }
@@ -74,6 +74,47 @@ export class AuthService {
     throw new HttpException('You entered wrong data or password', HttpStatus.UNAUTHORIZED);
   }
   
+  async loginWithGoogle(googleAuthDto: GoogleAuthDto, response: Response) {
+    if (!googleAuthDto.code) {
+      throw new HttpException('Code wasn\'t provided', HttpStatus.BAD_REQUEST);
+    }
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        code: googleAuthDto.code,
+        client_id: process.env.GOOGLE_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+        grant_type: 'authorization_code',
+      }),
+    });
+    
+    const tokens = await tokenRes.json();
+    
+    const profileRes = await fetch(
+      'https://www.googleapis.com/oauth2/v3/userinfo',
+      {
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`,
+        },
+      }
+    );
+    
+    const profile = await profileRes.json();
+    let currentUser: User | null = await this.usersService.findUserByEmail(profile.email);
+    if (currentUser) {
+      await this.generateToken(currentUser, response);
+      await this.getUserInfo(profile.email);
+      return response.redirect(process.env.FRONTEND_URL!);
+    } else {
+      currentUser = await this.usersService.createUser({username: profile.name, email: profile.email, password: ''});
+      await this.generateToken(currentUser, response);
+      await this.getUserInfo(profile.email);
+      return response.redirect(process.env.FRONTEND_URL!)
+    }
+  }
+  
   async register(userData: CreateUserDto, response: Response) {
     const existedUser = await this.usersService.findUserByEmail(userData.email);
     if (existedUser) {
@@ -90,6 +131,7 @@ export class AuthService {
     const refreshToken = this.jwtService.sign(payload,
       {secret: process.env.REFRESH_PRIVATE_KEY || 'refresh_secret', expiresIn: '3d'}
     );
+    
     response.cookie('refresh_token', refreshToken, {
       secure: true,
       sameSite: 'strict',

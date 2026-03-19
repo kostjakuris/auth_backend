@@ -19,7 +19,7 @@ export class RoomService {
     if (rooms) {
       return rooms;
     }
-    throw new NotFoundException('No rooms found');
+    return [];
   }
   
   async checkUserExistence(request: any, id: number) {
@@ -43,7 +43,7 @@ export class RoomService {
     const user = await this.usersService.findUserById(request.user.id);
     if (user) {
       await this.roomRepository.save({...createRoomDto, users: [user]});
-      return 'Room created successfully!';
+      return {message: 'Room created successfully!'};
     }
     throw new NotFoundException('This user was not found');
   }
@@ -53,7 +53,7 @@ export class RoomService {
     if (!user) {
       throw new NotFoundException('This user was not found');
     }
- 
+    
     const userInTheRoom = await this.roomRepository.createQueryBuilder('room').innerJoin('room.users', 'user').where(
       'room.id = :roomId', {roomId: roomId}).andWhere('user.id = :userId', {userId: id}).getOne();
     
