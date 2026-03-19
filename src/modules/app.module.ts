@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-import * as process from 'node:process';
 import { GatewayModule } from './gateway/gateway.module';
 import { RoomModule } from './room/room.module';
 import { MessageModule } from './messages/message.module';
@@ -15,14 +14,14 @@ import { MessageModule } from './messages/message.module';
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: Number(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
+      url: `postgresql://postgres.${process.env.POSTGRES_HOST}:${encodeURIComponent(
+        String(process.env.POSTGRES_PASSWORD))}@aws-1-eu-west-1.pooler.supabase.com:${process.env.POSTGRES_PORT}/postgres`,
+      ssl: {rejectUnauthorized: false},
+      logging: false,
       autoLoadEntities: true,
       synchronize: true,
     }),
