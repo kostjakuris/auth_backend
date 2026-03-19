@@ -4,18 +4,22 @@ import { MailService } from '../users/mail.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 
 @Module({
   providers: [AuthService, MailService],
   controllers: [AuthController],
   imports: [UsersModule,
-    JwtModule.register({
-      secret: process.env.PRIVATE_KEY || 'secret',
-    }),
+    JwtModule.registerAsync({
+      global: true,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('PRIVATE_KEY', 'secret'),
+      }),
+    })
   ],
   exports: [
-    JwtModule,
     AuthService
   ],
 })
