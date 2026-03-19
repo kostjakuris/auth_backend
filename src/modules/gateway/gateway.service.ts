@@ -1,13 +1,12 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { OnModuleInit } from '@nestjs/common';
 import { MessageService } from '../messages/message.service';
 import { CreateMessageDto, DeleteMessageDto, EditMessageDto, KickUserDto } from '../messages/dto/message.dto';
 import { RoomService } from '../room/room.service';
 
 @WebSocketGateway({
   cors: {
-    origin: true
+    origin: true,
   }
 })
 export class GatewayService {
