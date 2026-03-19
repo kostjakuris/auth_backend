@@ -6,7 +6,7 @@ async function start() {
   const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: true,
+      origin: process.env.FRONTEND_URL!,
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       allowedHeaders: "Content-Type, Accept, Authorization, X-Requested-With, initial-data",
       credentials: true,
