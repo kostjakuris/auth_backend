@@ -12,7 +12,9 @@ import { Message, MessageSchema } from '../../entities/message.schema';
 @Module({
   controllers: [RoomController],
   providers: [RoomService],
-  imports: [UsersModule, JwtModule, TypeOrmModule.forFeature([Room]),
+  imports: [UsersModule, JwtModule.register({
+    secret: process.env.PRIVATE_KEY || 'secret',
+  }), TypeOrmModule.forFeature([Room]),
     MongooseModule.forFeature([{name: Message.name, schema: MessageSchema}])],
   exports: [RoomService]
 })
