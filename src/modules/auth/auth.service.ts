@@ -111,7 +111,7 @@ export class AuthService {
       currentUser = await this.usersService.createUser({username: profile.name, email: profile.email, password: ''});
       await this.generateToken(currentUser, response);
       await this.getUserInfo(profile.email);
-      return response.redirect(process.env.FRONTEND_URL!)
+      return response.redirect(process.env.FRONTEND_URL!);
     }
   }
   
@@ -132,14 +132,13 @@ export class AuthService {
       {secret: process.env.REFRESH_PRIVATE_KEY || 'refresh_secret', expiresIn: '3d'}
     );
     
-    const cookieDomain = process.env.COOKIE_DOMAIN;
     const cookieOptions = {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      secure: true,
+      sameSite: 'none' as const,
       httpOnly: true,
-      ...(cookieDomain && { domain: cookieDomain }),
+      path: '/'
     };
-
+    
     response.cookie('refresh_token', refreshToken, {
       ...cookieOptions,
       maxAge: this.jwtService.decode(refreshToken).exp * 1000 - Date.now(),
@@ -148,10 +147,6 @@ export class AuthService {
       ...cookieOptions,
       maxAge: this.jwtService.decode(accessToken).exp * 1000 - Date.now(),
     });
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    };
-    
+    return response.send(HttpStatus.OK);
   }
 }
