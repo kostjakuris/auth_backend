@@ -33,6 +33,9 @@ export class AuthService {
   
   async regenerateToken(request: Request, response: Response) {
     const refreshToken = request.cookies['refresh_token'];
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token wasn\'t provided');
+    }
     const decodedToken = this.jwtService.decode(refreshToken);
     const user = await this.usersService.findUserByEmail(decodedToken.email);
     if (user) {
@@ -149,6 +152,5 @@ export class AuthService {
       ...cookieOptions,
       maxAge: this.jwtService.decode(accessToken).exp * 1000 - Date.now(),
     });
-    response.status(200).json({message: 'Authorized'});
   }
 }
