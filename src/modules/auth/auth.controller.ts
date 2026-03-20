@@ -12,10 +12,11 @@ import {
   ValidationPipe
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
+import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, ResetPasswordDto } from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/create.user.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -37,8 +38,8 @@ export class AuthController {
   
   @Post('/regenerate-token')
   @UsePipes(ValidationPipe)
-  regenerateToken(@Res({passthrough: true}) response: Response, @Body() requestData: RegenerateTokenDto) {
-    return this.authService.regenerateToken(requestData, response);
+  regenerateToken(@Res({passthrough: true}) response: Response, @Req() request: Request) {
+    return this.authService.regenerateToken(request, response);
   }
   
   @Post('/forgot-password')

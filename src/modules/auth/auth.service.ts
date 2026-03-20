@@ -1,13 +1,14 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, RegenerateTokenDto, ResetPasswordDto } from './dto/auth.dto';
+import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, ResetPasswordDto } from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/create.user.dto';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../../entities/users.entity';
 import * as process from 'node:process';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { MailService } from '../users/mail.service';
+
 
 @Injectable()
 export class AuthService {
@@ -30,8 +31,9 @@ export class AuthService {
     return response.send({message: 'Log out succesfull'});
   }
   
-  async regenerateToken(requestData: RegenerateTokenDto, response: Response) {
-    const decodedToken = this.jwtService.decode(requestData.refreshToken);
+  async regenerateToken(request: Request, response: Response) {
+    const refreshToken = request.cookies['refresh_token'];
+    const decodedToken = this.jwtService.decode(refreshToken);
     const user = await this.usersService.findUserByEmail(decodedToken.email);
     if (user) {
       return this.generateToken(user, response);
@@ -147,6 +149,6 @@ export class AuthService {
       ...cookieOptions,
       maxAge: this.jwtService.decode(accessToken).exp * 1000 - Date.now(),
     });
-    return response.send(HttpStatus.OK);
+    response.status(200).json({message: 'Authorized'});
   }
 }
