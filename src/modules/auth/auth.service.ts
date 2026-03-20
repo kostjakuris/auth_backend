@@ -19,9 +19,15 @@ export class AuthService {
   }
   
   async getUserInfo(email: string) {
-    const user = await this.usersService.findUserByEmail(email);
-    if (user) {
-      return {userId: user.id, username: user.username, email: user.email};
+    if (email) {
+      const user = await this.usersService.findUserByEmail(email);
+      if (user) {
+        return {userId: user.id, username: user.username, email: user.email};
+      } else {
+        return null;
+      }
+    } else {
+      return null;
     }
   }
   
@@ -34,7 +40,7 @@ export class AuthService {
     };
     response.clearCookie('access_token', {...cookieOptions});
     response.clearCookie('refresh_token', {...cookieOptions});
-    return response.send({message: 'Log out succesfull'});
+    return {message: 'Log out succesfull'};
   }
   
   async regenerateToken(request: Request, response: Response) {
@@ -158,5 +164,7 @@ export class AuthService {
       ...cookieOptions,
       maxAge: this.jwtService.decode(accessToken).exp * 1000 - Date.now(),
     });
+    
+    return {message: 'User logged in successfully'};
   }
 }

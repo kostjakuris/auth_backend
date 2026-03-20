@@ -5,10 +5,11 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { OptionalJwtAuthGuard } from '../../guards/optional-jwt-auth.guard';
 
 
 @Module({
-  providers: [AuthService, MailService],
+  providers: [AuthService, MailService, OptionalJwtAuthGuard],
   controllers: [AuthController],
   imports: [UsersModule,
     JwtModule.registerAsync({

@@ -21,7 +21,6 @@ export class RoomController {
   }
   
   @Get('/all')
-  @UseGuards(JwtAuthGuard)
   getAllRooms() {
     return this.roomService.getAllRooms();
   }
