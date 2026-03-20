@@ -14,9 +14,8 @@ import {
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, ResetPasswordDto } from './dto/auth.dto';
 import { CreateUserDto } from '../users/dto/create.user.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +31,7 @@ export class AuthController {
   
   @Get('/logout')
   @UseGuards(JwtAuthGuard)
-  logout(@Res() response: Response) {
+  logout(@Res({passthrough: true}) response: Response) {
     return this.authService.logout(response);
   }
   
