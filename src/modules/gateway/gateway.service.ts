@@ -5,8 +5,11 @@ import { CreateMessageDto, DeleteMessageDto, EditMessageDto, KickUserDto } from 
 import { RoomService } from '../room/room.service';
 
 @WebSocketGateway({
+  transports: ['websocket'],
   cors: {
-    origin: true,
+    origin: process.env.FRONTEND_URL!,
+    credentials: true,
+    methods: ['GET', 'POST'],
   }
 })
 export class GatewayService {
