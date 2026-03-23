@@ -16,7 +16,6 @@ import { ForgotPasswordDto, GoogleAuthDto, LoginUserDto, ResetPasswordDto } from
 import { CreateUserDto } from '../users/dto/create.user.dto';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { OptionalJwtAuthGuard } from '../../guards/optional-jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +24,7 @@ export class AuthController {
   }
 
   @Get('/user')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   getUserInfo(@Req() request: any) {
     return this.authService.getUserInfo(request.user?.email);
   }
