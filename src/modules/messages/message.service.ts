@@ -33,10 +33,11 @@ export class MessageService {
   }
   
   async saveMessage(id: number, userId: number, content: string, username: string, type: string,
-    fullPath: string | null = null) {
+    fullPath: string | null = null, fileName: string | null = null, fileSize: string | null = null) {
     const room = await this.roomService.findCurrentRoom(String(id));
     if (room) {
-      const newMessage = new this.messageModel({roomId: id, message: content, username, userId, type, fullPath});
+      const newMessage = new this.messageModel(
+        {roomId: id, message: content, username, userId, type, fullPath, fileName, fileSize});
       return await newMessage.save();
     }
     throw new NotFoundException('This room was not found');

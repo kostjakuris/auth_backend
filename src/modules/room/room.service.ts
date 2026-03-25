@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Room } from '../../entities/room.entity';
 import { CreateRoomDto } from './dto/room.dto';
 import { UsersService } from '../users/users.service';
@@ -14,8 +14,17 @@ export class RoomService {
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>) {
   }
   
-  async getAllRooms() {
+  async getAllRooms(request: any) {
     const rooms = await this.roomRepository.find();
+    const joinedRooms = await this.roomRepository.createQueryBuilder('room').innerJoin('room.users', 'user').where('user.id = :userId', {userId: request.user.id}).getManyAndCount();
+    if (rooms) {
+      return joinedRooms[0];
+    }
+    return [];
+  }
+  
+  async getSearchedRooms(name: string) {
+    const rooms = await this.roomRepository.find({where: {name: ILike(`%${name}%`)}});
     if (rooms) {
       return rooms;
     }

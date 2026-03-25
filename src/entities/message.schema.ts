@@ -20,6 +20,12 @@ export class Message {
   @Prop({nullable: true})
   fullPath: string;
   
+  @Prop({nullable: true})
+  fileName: string;
+  
+  @Prop({nullable: true})
+  fileSize: string;
+  
   @Prop({default: false})
   isUpdated: boolean;
   

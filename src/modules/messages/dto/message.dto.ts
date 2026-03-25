@@ -27,6 +27,12 @@ export class CreateMessageDto {
   @IsString({message: 'Room name must be a string'})
   @IsNotEmpty({message: 'Room name is required'})
   readonly roomName: string;
+  
+  @IsString({message: 'File name type must be a string'})
+  readonly fileName: string;
+  
+  @IsString({message: 'File size type must be a string'})
+  readonly fileSize: string;
 }
 
 export class EditMessageDto {

@@ -14,5 +14,4 @@ export class MessageController {
   getAllMessages(@Query() getMessagesDto: GetMessagesDto) {
     return this.messageService.getAllMessages(getMessagesDto.id);
   }
-  
 }

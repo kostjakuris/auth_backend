@@ -12,7 +12,7 @@ import {
   ValidationPipe
 } from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CheckDto, CreateRoomDto, DeleteRoomDto, EditRoomDto } from './dto/room.dto';
+import { CheckDto, CreateRoomDto, DeleteRoomDto, EditRoomDto, SearchRoomDto } from './dto/room.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('room')
@@ -21,8 +21,14 @@ export class RoomController {
   }
   
   @Get('/all')
-  getAllRooms() {
-    return this.roomService.getAllRooms();
+  @UseGuards(JwtAuthGuard)
+  getAllRooms(@Req() request: Request) {
+    return this.roomService.getAllRooms(request);
+  }
+  
+  @Get('/search')
+  getSearchedRooms(@Query() searchDto: SearchRoomDto) {
+    return this.roomService.getSearchedRooms(searchDto.q);
   }
   
   @Get('/check')

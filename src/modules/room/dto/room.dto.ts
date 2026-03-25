@@ -22,6 +22,12 @@ export class CheckDto {
   readonly id: string;
 }
 
+export class SearchRoomDto {
+  @IsString({message: 'Room name must be a string'})
+  @IsNotEmpty({message: 'Room name is required'})
+  readonly q: string;
+}
+
 export class EditRoomDto {
   @IsString({message: 'Room name must be a string'})
   @IsNotEmpty({message: 'Room name is required'})

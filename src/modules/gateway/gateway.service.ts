@@ -22,7 +22,7 @@ export class GatewayService {
   @SubscribeMessage('sendMessage')
   async sendMessage(@MessageBody() body: CreateMessageDto) {
     const message: any = await this.messageService.saveMessage(body.roomId, body.userId, body.content, body.username,
-      body.type, body.fullPath
+      body.type, body.fullPath, body.fileName, body.fileSize,
     );
     if (message) {
       this.server.to(body.roomName).emit('getMessage', {
@@ -31,6 +31,8 @@ export class GatewayService {
         username: body.username,
         message: body.content,
         fullPath: message.fullPath,
+        fileName: message.fileName,
+        fileSize: message.fileSize,
         createdAt: message.createdAt,
         type: message.type
       });
