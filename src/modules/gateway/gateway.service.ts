@@ -3,6 +3,9 @@ import { Server, Socket } from 'socket.io';
 import { MessageService } from '../messages/message.service';
 import { CreateMessageDto, DeleteMessageDto, EditMessageDto, KickUserDto } from '../messages/dto/message.dto';
 import { RoomService } from '../room/room.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Message, MessageDocument } from '../../entities/message.schema';
+import { Model } from 'mongoose';
 
 @WebSocketGateway({
   transports: ['websocket'],
@@ -13,7 +16,8 @@ import { RoomService } from '../room/room.service';
   }
 })
 export class GatewayService {
-  constructor(private messageService: MessageService, private roomService: RoomService) {
+  constructor(private messageService: MessageService, private roomService: RoomService,
+    @InjectModel(Message.name) private messageModel: Model<MessageDocument>) {
   }
   
   @WebSocketServer()
@@ -29,10 +33,19 @@ export class GatewayService {
         userId: body.userId,
         _id: message._id,
         username: body.username,
+        roomId: Number(message.roomId),
         message: body.content,
         fullPath: message.fullPath,
         fileName: message.fileName,
         fileSize: message.fileSize,
+        createdAt: message.createdAt,
+        type: message.type
+      });
+      this.server.emit('getLastMessage', {
+        username: body.username,
+        roomId: Number(message.roomId),
+        message: body.content,
+        fileName: message.fileName,
         createdAt: message.createdAt,
         type: message.type
       });
@@ -62,9 +75,17 @@ export class GatewayService {
     const message: any = await this.messageService.deleteMessage(body.messageId, body.messageUserId, body.ownerId,
       body.userId
     );
+    const lastMessage = await this.messageModel.find({roomId: body.roomId}).sort({createdAt: -1}).limit(1);
     if (message) {
       this.server.to(body.roomName).emit('getDeletedId', {
         id: message._id,
+      });
+      this.server.emit('getLastMessage', {
+        username: lastMessage[0].username,
+        roomId: Number(lastMessage[0].roomId),
+        message: lastMessage[0].message,
+        fileName: lastMessage[0].fileName,
+        type: lastMessage[0].type
       });
     }
   }

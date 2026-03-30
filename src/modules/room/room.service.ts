@@ -8,6 +8,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from '../../entities/message.schema';
 import { Model } from 'mongoose';
 
+export interface AllRooms extends Room {
+  lastMessage: Message;
+}
+
 @Injectable()
 export class RoomService {
   constructor(private usersService: UsersService, @InjectRepository(Room) private roomRepository: Repository<Room>,
@@ -15,12 +19,19 @@ export class RoomService {
   }
   
   async getAllRooms(request: any) {
-    const rooms = await this.roomRepository.find();
-    const joinedRooms = await this.roomRepository.createQueryBuilder('room').innerJoin('room.users', 'user').where('user.id = :userId', {userId: request.user.id}).getManyAndCount();
-    if (rooms) {
-      return joinedRooms[0];
+    const joinedRooms = await this.roomRepository.createQueryBuilder('room').innerJoin('room.users', 'user').where(
+      'user.id = :userId', {userId: request.user.id}).getManyAndCount();
+    const allRooms: AllRooms[] = [];
+    for (const room of joinedRooms[0]) {
+      const lastMessage = await this.messageModel.find({roomId: room.id}).sort({createdAt: -1}).limit(1);
+      const chatLastMessage: any = lastMessage[0] ?? null;
+      allRooms.push(
+        {
+          ...room,
+          lastMessage: chatLastMessage ? {...chatLastMessage._doc} : null,
+        });
     }
-    return [];
+    return allRooms;
   }
   
   async getSearchedRooms(name: string) {

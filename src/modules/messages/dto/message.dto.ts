@@ -82,6 +82,10 @@ export class DeleteMessageDto {
   @IsNotEmpty({message: 'Room name is required'})
   readonly roomName: string;
   
+  @IsNumber({}, {message: 'Room id must be a number'})
+  @IsNotEmpty({message: 'Room id is required'})
+  readonly roomId: number;
+  
   @IsNumber({}, {message: 'Owner id must be a number'})
   @IsNotEmpty({message: 'Owner id is required'})
   readonly ownerId: number;
