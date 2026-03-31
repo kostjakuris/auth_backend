@@ -54,7 +54,9 @@ export class RoomController {
   @UsePipes(ValidationPipe)
   @UseGuards(JwtAuthGuard)
   editRoom(@Req() request: Request, @Body() editRoomDto: EditRoomDto) {
-    return this.roomService.editRoom(request, editRoomDto.id, editRoomDto.name, editRoomDto.ownerId);
+    return this.roomService.editRoom(request, editRoomDto.id, editRoomDto.name, editRoomDto.ownerId,
+      editRoomDto.avatar
+    );
   }
   
   @Delete('/delete')

@@ -12,6 +12,9 @@ export class Room {
   @Column()
   ownerId: number;
   
+  @Column({nullable: true, default: ''})
+  avatar: string;
+  
   @ManyToMany(() => User, (user) => user.rooms, {eager: true, onDelete: 'CASCADE'})
   users: User[];
 }

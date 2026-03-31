@@ -8,12 +8,9 @@ export class CreateRoomDto {
   @IsNumber({}, {message: 'Owner id must be a number'})
   @IsNotEmpty({message: 'Owner id is required'})
   readonly ownerId: number;
-}
-
-export class JoinRoomDto {
-  @IsNumber({}, {message: 'Room id must be a number'})
-  @IsNotEmpty({message: 'Room id is required'})
-  readonly id: number;
+  
+  @IsString({message: 'Avatar must be a string'})
+  readonly avatar: string;
 }
 
 export class CheckDto {
@@ -40,6 +37,9 @@ export class EditRoomDto {
   @IsNumber({}, {message: 'Owner id must be a number'})
   @IsNotEmpty({message: 'Owner id is required'})
   readonly ownerId: number;
+  
+  @IsString({message: 'Avatar must be a string'})
+  readonly avatar: string;
 }
 
 export class DeleteRoomDto {

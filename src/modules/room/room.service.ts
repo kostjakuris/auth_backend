@@ -88,9 +88,9 @@ export class RoomService {
     return await this.roomRepository.createQueryBuilder().relation(Room, 'users').of(roomId).remove(userId);
   }
   
-  async editRoom(request: any, id: number, name: string, ownerId: number) {
+  async editRoom(request: any, id: number, name: string, ownerId: number, avatar: string) {
     if (request.user.id === ownerId) {
-      return await this.roomRepository.update({id}, {name});
+      return await this.roomRepository.update({id}, {name, avatar});
     }
     throw new ForbiddenException(`You don't have any permissions to edit this room`);
   }
