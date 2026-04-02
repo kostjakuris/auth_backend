@@ -64,6 +64,9 @@ export class EditMessageDto {
   @IsNotEmpty({message: 'Room name is required'})
   readonly roomName: string;
   
+  @IsNumber({}, {message: 'Room id must be a number'})
+  @IsNotEmpty({message: 'Room id is required'})
+  readonly roomId: number;
 }
 
 export class GetMessagesDto {

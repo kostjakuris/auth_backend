@@ -46,8 +46,14 @@ export class DeleteRoomDto {
   @IsNumber({}, {message: 'Room id must be a number'})
   @IsNotEmpty({message: 'Room id is required'})
   readonly id: number;
-  
+
   @IsNumber({}, {message: 'Owner id must be a number'})
   @IsNotEmpty({message: 'Owner id is required'})
   readonly ownerId: number;
+}
+
+export class DirectRoomDto {
+  @IsNumber({}, {message: 'Target user id must be a number'})
+  @IsNotEmpty({message: 'Target user id is required'})
+  readonly targetUserId: number;
 }

@@ -14,7 +14,10 @@ export class Room {
   
   @Column({nullable: true, default: ''})
   avatar: string;
-  
+
+  @Column({default: 'public'})
+  type: string;
+
   @ManyToMany(() => User, (user) => user.rooms, {eager: true, onDelete: 'CASCADE'})
   users: User[];
 }

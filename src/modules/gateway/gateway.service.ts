@@ -58,6 +58,8 @@ export class GatewayService {
       body.content,
       body.userId, body.ownerId
     );
+    const lastMessage = await this.messageModel.find({roomId: body.roomId}).sort({createdAt: -1}).limit(1);
+    
     if (message) {
       this.server.to(body.roomName).emit('getUpdatedMessage', {
         userId: body.userId,
@@ -66,6 +68,15 @@ export class GatewayService {
         message: body.content,
         isUpdated: message.isUpdated,
         updatedAt: message.updatedAt
+      });
+    }
+    if (lastMessage) {
+      this.server.emit('getLastMessage', {
+        username: lastMessage[0].username,
+        roomId: Number(lastMessage[0].roomId),
+        message: lastMessage[0].message,
+        fileName: lastMessage[0].fileName,
+        type: lastMessage[0].type
       });
     }
   }
@@ -80,7 +91,46 @@ export class GatewayService {
       this.server.to(body.roomName).emit('getDeletedId', {
         id: message._id,
       });
-      this.server.emit('getLastMessage', {
+      if (lastMessage) {
+        this.server.emit('getLastMessage', {
+          username: lastMessage[0].username,
+          roomId: Number(lastMessage[0].roomId),
+          message: lastMessage[0].message,
+          fileName: lastMessage[0].fileName,
+          type: lastMessage[0].type
+        });
+      }
+    }
+  }
+  
+  @SubscribeMessage('kickUserFromRoom')
+  async kickUser(@MessageBody() body: KickUserDto) {
+    await this.roomService.removeUser(body.roomId, body.userId);
+    this.server.to(body.roomName).emit('getKickedUser', {
+      userId: body.userId,
+      roomId: body.roomId
+    });
+    this.server.to(String(body.userId)).emit('getKickedFromRoom', {
+      roomId: body.roomId,
+    });
+  }
+  
+  @SubscribeMessage('getDirectRoom')
+  async getDirectRoom(
+    @MessageBody() body: {userId: string, roomId: number},
+  ) {
+    const allRooms = await this.roomService.getAllRooms(Number(body.userId));
+    const lastMessage = await this.messageModel.find({roomId: body.roomId}).sort({createdAt: -1}).limit(1);
+    
+    if (allRooms) {
+      this.server.to(body.userId).emit('getAllRooms', {
+        userId: Number(body.userId),
+        rooms: allRooms,
+        roomId: body.roomId,
+      });
+    }
+    if (lastMessage.length) {
+      this.server.to(body.userId).emit('getLastMessage', {
         username: lastMessage[0].username,
         roomId: Number(lastMessage[0].roomId),
         message: lastMessage[0].message,
@@ -90,12 +140,12 @@ export class GatewayService {
     }
   }
   
-  @SubscribeMessage('kickUserFromRoom')
-  async kickUser(@MessageBody() body: KickUserDto) {
-    await this.roomService.removeUser(body.roomId, body.userId);
-    this.server.to(body.roomName).emit('getKickedUser', {
-      userId: body.userId,
-    });
+  @SubscribeMessage('joinUserRoom')
+  joinUserRoom(
+    @MessageBody() body: {userId: string},
+    @ConnectedSocket() socket: Socket
+  ) {
+    socket.join(body.userId);
   }
   
   @SubscribeMessage('joinRoom')
@@ -105,11 +155,13 @@ export class GatewayService {
   ) {
     socket.join(body.roomName);
     
-    await this.roomService.joinRoom(body.userId, body.roomId);
+    if (body.roomId && body.userId) {
+      await this.roomService.joinRoom(body.userId, body.roomId);
+      this.server.to(body.roomName).emit('getJoinedUser', {
+        userId: body.userId,
+      });
+    }
     
-    this.server.to(body.roomName).emit('getJoinedUser', {
-      userId: body.userId,
-    });
   }
   
 }

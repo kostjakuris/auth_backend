@@ -12,7 +12,7 @@ import {
   ValidationPipe
 } from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CheckDto, CreateRoomDto, DeleteRoomDto, EditRoomDto, SearchRoomDto } from './dto/room.dto';
+import { CheckDto, CreateRoomDto, DeleteRoomDto, DirectRoomDto, EditRoomDto, SearchRoomDto } from './dto/room.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('room')
@@ -22,13 +22,14 @@ export class RoomController {
   
   @Get('/all')
   @UseGuards(JwtAuthGuard)
-  getAllRooms(@Req() request: Request) {
-    return this.roomService.getAllRooms(request);
+  getAllRooms(@Req() request: any) {
+    return this.roomService.getAllRooms(request.user.id);
   }
   
   @Get('/search')
-  getSearchedRooms(@Query() searchDto: SearchRoomDto) {
-    return this.roomService.getSearchedRooms(searchDto.q);
+  @UseGuards(JwtAuthGuard)
+  getSearchedRooms(@Req() request: Request, @Query() searchDto: SearchRoomDto) {
+    return this.roomService.getSearchedRooms(request, searchDto.q);
   }
   
   @Get('/check')
@@ -43,6 +44,13 @@ export class RoomController {
     return this.roomService.findCurrentRoom(checkDto.id);
   }
   
+  @Post('/direct')
+  @UsePipes(ValidationPipe)
+  @UseGuards(JwtAuthGuard)
+  getOrCreateDirectRoom(@Req() request: Request, @Body() directRoomDto: DirectRoomDto) {
+    return this.roomService.getOrCreateDirectRoom((request as any).user.id, directRoomDto.targetUserId);
+  }
+
   @Post('/create')
   @UsePipes(ValidationPipe)
   @UseGuards(JwtAuthGuard)
